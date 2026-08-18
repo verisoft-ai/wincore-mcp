@@ -1,0 +1,64 @@
+{
+  "name": "windows2-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for AI-agent-driven Windows desktop automation via Appium DesktopDriver",
+  "keywords": [
+    "appium",
+    "mcp",
+    "model-context-protocol",
+    "desktop",
+    "windows",
+    "automation",
+    "verisoft"
+  ],
+  "main": "build/src/index.js",
+  "files": [
+    "build/**/*",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "bin": {
+    "windows2-mcp": "build/src/index.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "watch": "tsc -b --watch",
+    "lint": "eslint .",
+    "test": "npx vitest run",
+    "start": "node build/src/index.js"
+  },
+  "author": "Automate The Planet",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/verisoft-ai/windows2-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/verisoft-ai/windows2-mcp/issues"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "~0.82.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.1035.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@napi-rs/canvas": "^1.0.2",
+    "@techstark/opencv-js": "^5.0.0-release.1",
+    "pngjs": "^7.0.0",
+    "webdriverio": "^9.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@appium/eslint-config-appium-ts": "^2.0.3",
+    "@appium/tsconfig": "^1.1.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@types/node": "^24.8.1",
+    "@types/pngjs": "^6.0.5",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
+    "eslint": "^9.38.0",
+    "semantic-release": "^25.0.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.1",
+    "vitest": "^2.1.0"
+  }
+}

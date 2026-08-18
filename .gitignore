@@ -1,0 +1,7 @@
+node_modules/
+build/
+*.log
+.DS_Store
+
+# Ignore package-lock.json in favour of npm-shrinkwrap.json for npm publishing
+package-lock.json*
