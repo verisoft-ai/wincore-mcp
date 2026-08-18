@@ -48,6 +48,12 @@ Environment variables (read at startup):
 }
 ```
 
+## Tools
+
+See [docs/TOOLS.md](docs/TOOLS.md) for the full tool reference (~85 tools across session
+management, element discovery, interaction, UIA patterns, window management, vision, and more),
+generated from the current tool source.
+
 ## Development
 
 ```bash
