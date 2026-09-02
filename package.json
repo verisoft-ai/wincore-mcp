@@ -1,6 +1,6 @@
 {
   "name": "wincore-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for AI-agent-driven Windows desktop automation via Appium DesktopDriver",
   "keywords": [
     "appium",
