@@ -20,7 +20,7 @@ async function main() {
 
     // Step 4: Create and configure MCP server
     const server = new McpServer({
-        name: 'windows2-mcp',
+        name: 'wincore-mcp',
         version: '1.0.0',
     }, {
         instructions: `
@@ -92,7 +92,7 @@ Call get_contexts to list available contexts. If WEBVIEW contexts are present, a
     // Step 7: Connect transport (stdout is owned by MCP protocol — all logs go to stderr)
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    process.stderr.write('[MCP] windows2-mcp server ready. Call create_session to launch an app.\n');
+    process.stderr.write('[MCP] wincore-mcp server ready. Call create_session to launch an app.\n');
 }
 
 main();

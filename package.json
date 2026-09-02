@@ -1,5 +1,5 @@
 {
-  "name": "windows2-mcp",
+  "name": "wincore-mcp",
   "version": "1.0.0",
   "description": "MCP server for AI-agent-driven Windows desktop automation via Appium DesktopDriver",
   "keywords": [
@@ -19,7 +19,7 @@
     "CHANGELOG.md"
   ],
   "bin": {
-    "windows2-mcp": "build/src/index.js"
+    "wincore-mcp": "build/src/index.js"
   },
   "scripts": {
     "build": "tsc -b",
@@ -32,10 +32,10 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/verisoft-ai/windows2-mcp.git"
+    "url": "https://github.com/verisoft-ai/wincore-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/verisoft-ai/windows2-mcp/issues"
+    "url": "https://github.com/verisoft-ai/wincore-mcp/issues"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "~0.82.0",

@@ -1,4 +1,4 @@
-# windows2-mcp
+# wincore-mcp
 
 MCP server exposing Windows desktop UI Automation as tools for AI agents, built on top of [appium-desktop-driver](https://github.com/verisoft-ai/appium-desktop-driver).
 
@@ -17,10 +17,10 @@ appium --port 4723
 ## Install
 
 ```bash
-npm install -g windows2-mcp
+npm install -g wincore-mcp
 ```
 
-or run directly with `npx windows2-mcp`.
+or run directly with `npx wincore-mcp`.
 
 ## Configure
 
@@ -36,9 +36,9 @@ Environment variables (read at startup):
 ```json
 {
   "mcpServers": {
-    "windows2-mcp": {
+    "wincore-mcp": {
       "command": "npx",
-      "args": ["-y", "windows2-mcp"],
+      "args": ["-y", "wincore-mcp"],
       "env": {
         "APPIUM_HOST": "127.0.0.1",
         "APPIUM_PORT": "4723"

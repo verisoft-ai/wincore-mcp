@@ -1,6 +1,6 @@
-# windows2-mcp Tool Reference
+# wincore-mcp Tool Reference
 
-Full reference for every tool exposed by the `windows2-mcp` MCP server. Generated from
+Full reference for every tool exposed by the `wincore-mcp` MCP server. Generated from
 `src/tools/*.ts` — each tool's name, parameters, and description come straight from its
 `registerTool()` call, so this stays accurate as long as it's regenerated after tool changes.
 
@@ -8,7 +8,7 @@ Tools are grouped by file/domain, mirroring `src/tools/index.ts` → `registerAl
 
 ## Before you start: Appium must already be running
 
-`windows2-mcp` does **not** manage an Appium server for you — there is no auto-start flow.
+`wincore-mcp` does **not** manage an Appium server for you — there is no auto-start flow.
 `create_session` checks `http://<APPIUM_HOST>:<APPIUM_PORT>/status` and throws immediately if
 nothing answers:
 
@@ -316,9 +316,9 @@ Only valid when the active window is an IE window — automatically entered by `
 create_session { app: "C:\\Windows\\notepad.exe" }
 find_element { strategy: "class name", selector: "RichEditD2DPT" }
   → elementId "e123..."
-set_value { elementId: "e123...", value: "Hello from windows2-mcp" }
+set_value { elementId: "e123...", value: "Hello from wincore-mcp" }
 get_text { elementId: "e123..." }
-  → "Hello from windows2-mcp"
+  → "Hello from wincore-mcp"
 delete_session
 ```
 
