@@ -30,7 +30,7 @@ jobs:
           node-version: 24.x
           registry-url: https://registry.npmjs.org
 
-      - run: npm ci
+      - run: npm install --no-package-lock
 
       - run: npm run lint
 
