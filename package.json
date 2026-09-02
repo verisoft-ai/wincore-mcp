@@ -32,7 +32,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/verisoft-ai/wincore-mcp.git"
+    "url": "git+https://github.com/verisoft-ai/wincore-mcp.git"
   },
   "bugs": {
     "url": "https://github.com/verisoft-ai/wincore-mcp/issues"
