@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/verisoft-ai/wincore-mcp/compare/v1.0.0...v1.0.1) (2026-09-02)
+
+### Bug Fixes
+
+* normalize repository url in package.json ([6793d10](https://github.com/verisoft-ai/wincore-mcp/commit/6793d10cd96277a20d26f3ae56b1fa83c80af802))
+
 ## 1.0.0 (2026-09-02)
 
 ### Features
