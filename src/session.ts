@@ -63,7 +63,7 @@ export class AppiumSession {
 
         const caps: Record<string, unknown> = {
             platformName: 'Windows',
-            'appium:automationName': 'DesktopDriver',
+            'appium:automationName': 'Wincore',
         };
 
         if (params.app !== undefined) {caps['appium:app'] = params.app;}

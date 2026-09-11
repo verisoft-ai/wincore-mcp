@@ -24,7 +24,7 @@ async function main() {
         version: '1.0.0',
     }, {
         instructions: `
-You are a Windows desktop automation agent using the Appium DesktopDriver via UI Automation (UIA).
+You are a Windows desktop automation agent using the Appium Wincore driver via UI Automation (UIA).
 
 ## Session
 - Before starting, ask the user: should you launch a new app or connect to an existing session?
