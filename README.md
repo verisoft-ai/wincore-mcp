@@ -1,16 +1,16 @@
 # wincore-mcp
 
-MCP server exposing Windows desktop UI Automation as tools for AI agents, built on top of [appium-desktop-driver](https://github.com/verisoft-ai/appium-desktop-driver).
+MCP server exposing Windows desktop UI Automation as tools for AI agents, built on top of [appium-wincore-driver](https://github.com/verisoft-ai/appium-wincore-driver).
 
-Previously shipped as `desktop-driver-mcp` inside `appium-desktop-driver`; now split into its own package so the MCP server and the Appium driver can be installed, versioned, and released independently.
+Previously shipped as `desktop-driver-mcp` inside `appium-wincore-driver`; now split into its own package so the MCP server and the Appium driver can be installed, versioned, and released independently.
 
 ## Prerequisites
 
-- An Appium server running with `appium-desktop-driver` installed:
+- An Appium server running with `appium-wincore-driver` installed:
 
 ```bash
 npm install -g appium
-appium driver install --source=npm appium-desktop-driver
+appium driver install --source=npm appium-wincore-driver
 appium --port 4723
 ```
 
