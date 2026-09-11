@@ -1,3 +1,15 @@
+## [2.0.0](https://github.com/verisoft-ai/wincore-mcp/compare/v1.0.1...v2.0.0) (2026-09-11)
+
+### ⚠ BREAKING CHANGES
+
+* requires appium-wincore-driver 3.0.0+.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+
+### Features
+
+* use automationName "Wincore" (appium-wincore-driver 3.0) ([32cb6a3](https://github.com/verisoft-ai/wincore-mcp/commit/32cb6a3e2d80fd7e41418d459a957f3effa8dfd0))
+
 ## [1.0.1](https://github.com/verisoft-ai/wincore-mcp/compare/v1.0.0...v1.0.1) (2026-09-02)
 
 ### Bug Fixes
