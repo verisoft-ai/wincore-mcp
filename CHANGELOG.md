@@ -1,3 +1,9 @@
+## [2.0.1](https://github.com/verisoft-ai/wincore-mcp/compare/v2.0.0...v2.0.1) (2026-10-14)
+
+### Bug Fixes
+
+* pin jszip to 3.10.1 ([df81394](https://github.com/verisoft-ai/wincore-mcp/commit/df81394e2e2bd03dd93a0bbc540e24ca82a4efb0))
+
 ## [2.0.0](https://github.com/verisoft-ai/wincore-mcp/compare/v1.0.1...v2.0.0) (2026-09-11)
 
 ### ⚠ BREAKING CHANGES
