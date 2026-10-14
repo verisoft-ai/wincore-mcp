@@ -43,6 +43,7 @@
     "@modelcontextprotocol/sdk": "^1.27.1",
     "@napi-rs/canvas": "^1.0.2",
     "@techstark/opencv-js": "^5.0.0-release.1",
+    "jszip": "3.10.1",
     "pngjs": "^7.0.0",
     "webdriverio": "^9.0.0",
     "zod": "^4.3.6"
