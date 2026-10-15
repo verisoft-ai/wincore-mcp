@@ -1,3 +1,9 @@
+## [2.1.0](https://github.com/verisoft-ai/wincore-mcp/compare/v2.0.1...v2.1.0) (2026-10-15)
+
+### Features
+
+* add select_from_combobox and generic extension command tools ([#3](https://github.com/verisoft-ai/wincore-mcp/issues/3)) ([85cf9c3](https://github.com/verisoft-ai/wincore-mcp/commit/85cf9c382783f73f653fbcca6207145134a51dc8))
+
 ## [2.0.1](https://github.com/verisoft-ai/wincore-mcp/compare/v2.0.0...v2.0.1) (2026-10-14)
 
 ### Bug Fixes
