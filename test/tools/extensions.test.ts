@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { registerExtensionTools } from '../../src/tools/extensions.js';
 import { AppiumSession, type ExtensionsInfo } from '../../src/session.js';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { COVERED_COMMANDS, registerExtensionTools } from '../../src/tools/extensions.js';
 import { ELEMENT_KEY } from '../../src/constants.js';
 import { createMockServer } from '../fixtures/server.js';
 import { createMockSession } from '../fixtures/session.js';
@@ -8,13 +10,16 @@ import { createMockSession } from '../fixtures/session.js';
 const EXTENSIONS: ExtensionsInfo = {
     rest: {
         driver: {
-            'windows: getWindows': { command: 'emGetWindows' },
-            'windows: setValue': {
-                command: 'emSetValue',
-                info: 'Set a value',
-                params: [{ name: 'elementId', required: true }, { name: 'value', required: true }],
+            'windows: cacheRequest': {
+                command: 'emCacheRequest',
+                info: 'Set the UIA cache request',
+                params: [{ name: 'treeScope', required: false }, { name: 'treeFilter', required: false }],
             },
-            'windows: click': { command: 'emClick', params: [{ name: 'elementId', required: false }] },
+            'windows: getDpiScale': { command: 'emGetDpiScale' },
+            'windows: setPin': { command: 'emSetPin', params: [{ name: 'elementId', required: true }, { name: 'pin', required: true }] },
+            // Covered by set_element_value / advanced_click: must be left out.
+            'windows: setValue': { command: 'emSetValue', params: [{ name: 'elementId', required: true }, { name: 'value', required: true }] },
+            'windows: click': { command: 'emClick' },
         },
         plugins: {
             PcommPlugin: {
@@ -43,12 +48,32 @@ describe('extension tools', () => {
 
             expect(result.isError).toBeUndefined();
             expect(text).toContain('driver (3):');
-            expect(text).toContain('windows: setValue(elementId, value) — Set a value');
-            expect(text).toContain('windows: click(elementId?)');
-            expect(text).toContain('windows: getWindows()');
+            expect(text).toContain('windows: cacheRequest(treeScope?, treeFilter?) — Set the UIA cache request');
+            expect(text).toContain('windows: setPin(elementId, pin)');
+            expect(text).toContain('windows: getDpiScale()');
             expect(text).toContain('plugin PcommPlugin (2):');
             expect(text).toContain('pcomm: sendAidKey(key)');
             expect(text).toContain('pcomm: legacy() [deprecated]');
+        });
+
+        it('leaves out commands that have a dedicated tool', async () => {
+            const { server } = setup();
+
+            const text: string = ((await server.call('list_extension_commands', {})) as any).content[0].text;
+
+            expect(text).not.toContain('windows: setValue');
+            expect(text).not.toContain('windows: click');
+        });
+
+        it('says so when every command is covered by a dedicated tool', async () => {
+            const { server, session } = setup();
+            (session as any).listExtensions = vi.fn().mockResolvedValue({
+                rest: { driver: { 'windows: setValue': { command: 'emSetValue' } }, plugins: {} },
+            });
+
+            const text: string = ((await server.call('list_extension_commands', {})) as any).content[0].text;
+
+            expect(text).toBe('No extension commands beyond the ones covered by dedicated tools.');
         });
 
         it('filters by name, case-insensitively', async () => {
@@ -156,5 +181,27 @@ describe('AppiumSession.listExtensions', () => {
         const session = new AppiumSession({ appiumHost: '127.0.0.1', appiumPort: 4723 } as any);
 
         await expect(session.listExtensions()).rejects.toThrow('No active session');
+    });
+});
+
+describe('COVERED_COMMANDS', () => {
+    // Commands the tools call only as internal helpers, with no tool of their own: they stay listed.
+    const INTERNAL_ONLY = ['windows: getDpiScale'];
+    const toolsDir = join(__dirname, '../../src/tools');
+    const sources = readdirSync(toolsDir).filter((f) => f.endsWith('.ts')).map((f) => readFileSync(join(toolsDir, f), 'utf-8'));
+
+    it('matches the extension commands the dedicated tools call', () => {
+        const called = new Set(sources.flatMap((src) => [...src.matchAll(/executeScript\(\s*'([^']+)'/g)].map((m) => m[1])));
+        INTERNAL_ONLY.forEach((name) => called.delete(name));
+
+        expect(Object.keys(COVERED_COMMANDS).sort()).toEqual([...called].sort());
+    });
+
+    it('maps every command to a registered tool', () => {
+        const tools = new Set(sources.flatMap((src) => [...src.matchAll(/registerTool\(\s*'([^']+)'/g)].map((m) => m[1])));
+
+        for (const tool of Object.values(COVERED_COMMANDS)) {
+            expect(tools, tool).toContain(tool);
+        }
     });
 });

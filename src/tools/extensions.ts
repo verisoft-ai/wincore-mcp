@@ -4,6 +4,55 @@ import type { AppiumSession, ExtensionCommandInfo } from '../session.js';
 import { formatError } from '../errors.js';
 import { ELEMENT_KEY } from '../constants.js';
 
+/**
+ * Extension commands that already have a dedicated tool, mapped to that tool. They are left
+ * out of list_extension_commands so the agent only sees what it cannot reach otherwise.
+ * test/tools/extensions.test.ts checks this against the executeScript calls in src/tools.
+ */
+export const COVERED_COMMANDS: Readonly<Record<string, string>> = {
+    'powerShell': 'execute_powershell',
+    'windows: addToSelection': 'add_to_selection',
+    'windows: allSelectedItems': 'get_all_selected_items',
+    'windows: attachDotnetBridge': 'attach_dotnet_bridge',
+    'windows: attachJavaSwing': 'attach_java_swing',
+    'windows: click': 'advanced_click',
+    'windows: clickAndDrag': 'click_and_drag',
+    'windows: close': 'close_window',
+    'windows: closeApp': 'close_app',
+    'windows: collapse': 'collapse_element',
+    'windows: deleteFile': 'delete_file',
+    'windows: deleteFolder': 'delete_folder',
+    'windows: expand': 'expand_element',
+    'windows: getClipboard': 'get_clipboard',
+    'windows: getDeviceTime': 'get_device_time',
+    'windows: getMonitors': 'get_monitors',
+    'windows: getNativeChildren': 'get_native_children',
+    'windows: getValue': 'get_element_value',
+    'windows: getWindowElement': 'get_window_element',
+    'windows: getWindows': 'get_windows',
+    'windows: hover': 'hover',
+    'windows: invoke': 'invoke_element',
+    'windows: isMultiple': 'is_multi_select',
+    'windows: keys': 'send_keys',
+    'windows: launchApp': 'launch_app',
+    'windows: maximize': 'maximize_window',
+    'windows: minimize': 'minimize_window',
+    'windows: removeFromSelection': 'remove_from_selection',
+    'windows: restore': 'restore_window',
+    'windows: scroll': 'scroll',
+    'windows: scrollIntoView': 'scroll_element_into_view',
+    'windows: select': 'select_item',
+    'windows: selectFromCombobox': 'select_from_combobox',
+    'windows: selectedItem': 'get_selected_item',
+    'windows: setClipboard': 'set_clipboard',
+    'windows: setFocus': 'focus_element',
+    'windows: setValue': 'set_element_value',
+    'windows: startRecordingScreen': 'start_recording_screen',
+    'windows: stopRecordingScreen': 'stop_recording_screen',
+    'windows: switchToWindowByTitle': 'switch_to_window_by_title',
+    'windows: toggle': 'toggle_element',
+};
+
 function formatCommand(name: string, info: ExtensionCommandInfo): string {
     const params = (info.params ?? []).map((p) => (p.required ? p.name : `${p.name}?`)).join(', ');
     const deprecated = info.deprecated ? ' [deprecated]' : '';
@@ -13,6 +62,7 @@ function formatCommand(name: string, info: ExtensionCommandInfo): string {
 
 function formatGroup(title: string, commands: Record<string, ExtensionCommandInfo>, filter: string | undefined): string[] {
     const names = Object.keys(commands)
+        .filter((name) => !(name in COVERED_COMMANDS))
         .filter((name) => !filter || name.toLowerCase().includes(filter.toLowerCase()))
         .sort();
     if (names.length === 0) {return [];}
@@ -36,10 +86,11 @@ export function registerExtensionTools(server: McpServer, session: AppiumSession
     server.registerTool(
         'list_extension_commands',
         {
-            description: 'List every extension command (execute method) available in the current session, as Appium\'s listExtensions reports them: '
+            description: 'List the extension commands (execute methods) available in the current session that have no dedicated tool, as Appium\'s listExtensions reports them: '
                 + 'the driver\'s own "windows: …" commands plus the commands of each active Appium plugin (e.g. .NET / Java / SAP bridges, PCOMM). '
+                + 'Commands already covered by a dedicated tool are left out — use that tool instead. '
                 + 'Each line shows the command name, its parameters (`?` = optional) and its description. '
-                + 'Use this to discover commands that have no dedicated tool, then run them with execute_extension_command.',
+                + 'Run a listed command with execute_extension_command.',
             inputSchema: {
                 filter: z.string().optional().describe('Only list commands whose name contains this text (case-insensitive), e.g. "window" or "pcomm:"'),
             },
@@ -54,7 +105,7 @@ export function registerExtensionTools(server: McpServer, session: AppiumSession
                 }
                 const text = lines.length > 0
                     ? lines.join('\n')
-                    : filter ? `No extension commands match "${filter}".` : 'The session declares no extension commands.';
+                    : filter ? `No extension commands match "${filter}".` : 'No extension commands beyond the ones covered by dedicated tools.';
                 return { content: [{ type: 'text' as const, text }] };
             } catch (err) {
                 return { isError: true, content: [{ type: 'text' as const, text: formatError(err) }] };
