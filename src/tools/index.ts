@@ -16,6 +16,7 @@ import { registerIeTools } from './ie.js';
 import { registerFileTools } from './files.js';
 import { registerRecordingTools } from './recording.js';
 import { registerSystemTools } from './system.js';
+import { registerExtensionTools } from './extensions.js';
 
 export function registerAllTools(server: McpServer, session: AppiumSession): void {
     registerSessionTools(server, session);
@@ -34,4 +35,5 @@ export function registerAllTools(server: McpServer, session: AppiumSession): voi
     registerFileTools(server, session);
     registerRecordingTools(server, session);
     registerSystemTools(server, session);
+    registerExtensionTools(server, session);
 }

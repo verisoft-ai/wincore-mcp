@@ -350,6 +350,39 @@ Only valid when the active window is an IE window — automatically entered by `
 
 ---
 
+## Extension Commands (`extensions.ts`)
+
+Generic access to every extension command (execute method) the session
+supports, including ones without a dedicated tool and ones added by Appium
+plugins (.NET / Java / SAP bridges, PCOMM, …).
+
+| Tool | Params | Description |
+| --- | --- | --- |
+| `list_extension_commands` | `filter?` | List the driver's and each active plugin's commands with their parameters (`?` = optional) and descriptions. `filter` keeps names containing the text (case-insensitive). |
+| `execute_extension_command` | `command`, `args?` (object) | Run a listed command by exact name with named parameters. Element references in the result come back as plain element ID strings. |
+
+How it works: `list_extension_commands` calls Appium's `listExtensions`
+endpoint (`GET /session/:sessionId/appium/extensions`), the same one Appium
+Inspector uses. Appium builds the answer from the `executeMethodMap` of the
+session's driver class and of every plugin active for the session, so a new
+driver or plugin command shows up with no change to this server.
+`execute_extension_command` sends `executeScript(command, [args])`, which
+Appium routes to whichever driver or plugin declares the command.
+
+Typical flow:
+
+1. `list_extension_commands` with a `filter` such as `window` or `pcomm:`.
+1. `execute_extension_command` with the exact name and parameters, e.g.
+   `{ "command": "windows: getWindows" }` or
+   `{ "command": "pcomm: sendAidKey", "args": { "key": "Enter" } }`.
+
+Prefer a dedicated tool when one exists: it validates input and formats the
+result. Commands are only listed if their driver or plugin declares them in
+`executeMethodMap`; plugins that are installed but not activated for the
+server (`appium --use-plugins=…`) do not appear.
+
+---
+
 ## Example Workflows
 
 ### Launch Notepad, type text, verify
