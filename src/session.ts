@@ -44,6 +44,22 @@ export interface SessionParams {
     ieDriverServerPath?: string;
 }
 
+/** One execute method as reported by Appium's listExtensions. */
+export interface ExtensionCommandInfo {
+    command: string;
+    deprecated?: boolean;
+    info?: string;
+    params?: Array<{ name: string; required: boolean }>;
+}
+
+/** Response of Appium's listExtensions, keyed by execute method name (e.g. "windows: click"). */
+export interface ExtensionsInfo {
+    rest: {
+        driver: Record<string, ExtensionCommandInfo>;
+        plugins?: Record<string, Record<string, ExtensionCommandInfo>>;
+    };
+}
+
 export class AppiumSession {
     private driver: Browser | null = null;
 
@@ -129,5 +145,21 @@ export class AppiumSession {
     getDriver(): Browser {
         if (!this.driver) {throw new Error('No active session. Call create_session first.');}
         return this.driver;
+    }
+
+    /**
+     * Appium's listExtensions (GET /session/:id/appium/extensions): the execute methods the
+     * session's driver and its active plugins declare in their executeMethodMap. Called over
+     * raw HTTP because webdriverio only binds Appium protocol commands for some capabilities.
+     */
+    async listExtensions(): Promise<ExtensionsInfo> {
+        const { sessionId } = this.getDriver();
+        const { appiumHost: host, appiumPort: port } = this.appiumConfig;
+        const res = await fetch(`http://${host}:${port}/session/${encodeURIComponent(sessionId)}/appium/extensions`);
+        const body = await res.json() as { value?: ExtensionsInfo & { error?: string; message?: string } };
+        if (!res.ok || body.value?.error) {
+            throw new Error(`listExtensions failed (HTTP ${res.status}): ${body.value?.message ?? body.value?.error ?? 'unknown error'}`);
+        }
+        return body.value as ExtensionsInfo;
     }
 }

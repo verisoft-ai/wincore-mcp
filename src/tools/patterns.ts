@@ -153,6 +153,30 @@ export function registerPatternTools(server: McpServer, session: AppiumSession):
     );
 
     server.registerTool(
+        'select_from_combobox',
+        {
+            description: 'Select an entry by its text from a combo box / dropdown (or any list box or tree) in one call (windows: selectFromCombobox). '
+                + 'Opens the container if needed, finds the entry whose Name is exactly `value` (including entries of virtualized lists that are not yet in the tree), selects it, and closes the popup again. '
+                + 'Prefer this over expand_element + find_element + select_item/click_element whenever you know the text of the entry to pick. '
+                + 'Pass the combo box itself, not an item inside it. Matching is exact and case-sensitive; if no entry matches, the popup is closed and the tool fails with "no such element" — '
+                + 'then call expand_element and get_page_source to read the available entry names. Not suitable when the dropdown opens as a separate top-level window, or for editable combo boxes where you want to type free text (use set_element_value).',
+            inputSchema: {
+                elementId: z.string().min(1).describe('Element ID of the combo box (or list box / tree container) returned by find_element'),
+                value: z.string().describe('Exact text (UIA Name, case-sensitive) of the entry to select'),
+            },
+        },
+        async ({ elementId, value }) => {
+            try {
+                const driver = session.getDriver();
+                await driver.executeScript('windows: selectFromCombobox', [{ elementId, value }]);
+                return { content: [{ type: 'text' as const, text: `selected '${value}'` }] };
+            } catch (err) {
+                return { isError: true, content: [{ type: 'text' as const, text: formatError(err) }] };
+            }
+        }
+    );
+
+    server.registerTool(
         'is_multi_select',
         {
             description: 'Check whether a container (e.g. ListBox) allows multiple items to be selected via the UIA Selection pattern.',
