@@ -169,4 +169,30 @@ describe('pattern tools', () => {
             expect(result.isError).toBe(true);
         });
     });
+
+    describe('select_from_combobox', () => {
+        it('calls driver.executeScript("windows: selectFromCombobox", [{elementId, value}]) and reports the selection', async () => {
+            const server = createMockServer();
+            const { session, mockBrowser } = createMockSession();
+            registerPatternTools(server, session);
+
+            const result = await server.call('select_from_combobox', { elementId: ELEM_ID, value: 'Finance' }) as any;
+
+            expect(mockBrowser.executeScript).toHaveBeenCalledWith('windows: selectFromCombobox', [{ elementId: ELEM_ID, value: 'Finance' }]);
+            expect(result.content[0].text).toBe("selected 'Finance'");
+            expect(result.isError).toBeUndefined();
+        });
+
+        it('returns isError when no entry matches', async () => {
+            const server = createMockServer();
+            const { session, mockBrowser } = createMockSession();
+            mockBrowser.executeScript = vi.fn().mockRejectedValue(new Error("No entry with the text 'Nope' was found in the list."));
+            registerPatternTools(server, session);
+
+            const result = await server.call('select_from_combobox', { elementId: ELEM_ID, value: 'Nope' }) as any;
+
+            expect(result.isError).toBe(true);
+            expect(result.content[0].text).toContain('Nope');
+        });
+    });
 });

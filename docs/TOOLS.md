@@ -198,12 +198,54 @@ entirely, useful for elements that don't respond to synthetic input.
 | `get_element_value` | `elementId` | Value pattern — read the current value. |
 | `focus_element` | `elementId` | Focus pattern (`windows: setFocus`) — required before keyboard-driven interaction with a specific control. |
 | `select_item` | `elementId` | SelectionItem pattern (`windows: select`) — select an item in a list/tab/combo when a plain click doesn't trigger selection. |
+| `select_from_combobox` | `elementId`, `value` | `windows: selectFromCombobox` — pick an entry by its exact text from a combo box, list box, or tree in one call. See [Selecting from a combo box](#selecting-from-a-combo-box). |
 | `is_multi_select` | `elementId` | Selection pattern — does this container (e.g. ListBox) allow multi-select? |
 | `scroll_element_into_view` | `elementId` | ScrollItem pattern — scroll a container so the element becomes visible. Use before clicking something that may be out of the scroll viewport. |
 | `get_selected_item` | `elementId` | Selection pattern — first selected item in a container. Returns an element ID. |
 | `get_all_selected_items` | `elementId` | Selection pattern — all selected items in a multi-select container. Returns a JSON array of element IDs. |
 | `add_to_selection` | `elementId` | SelectionItem pattern — add an item to the current selection without deselecting others. |
 | `remove_from_selection` | `elementId` | SelectionItem pattern — remove an item from the current selection. |
+
+### Selecting from a combo box
+
+`select_from_combobox` replaces the manual expand → find item → select
+sequence with one call. Requires `appium-wincore-driver` 3.2.0 or newer.
+
+What it does:
+
+1. Expands the container unless it is already open. A list box or tree
+   (no ExpandCollapse pattern) is searched as it is.
+1. Asks the container for the entry (UIA `ItemContainerPattern`, or a
+   server plugin's tree provider). This reaches entries a virtualized
+   WPF list has not created yet.
+1. Otherwise searches descendants for an element whose `Name` equals
+   `value`. List, data, tree and menu items win over other elements with
+   the same text, such as the combo's own selection box.
+1. Selects the entry (like `select_item`), then closes the popup.
+
+When to use it:
+
+- Picking a known option from a combo box, dropdown, list box, or tree.
+- Long or virtualized lists, where the target entry is not in
+  `get_page_source` until scrolled into view.
+
+When not to use it:
+
+- The dropdown opens as a separate top-level window: its entries are not
+  descendants of the combo box. Use `expand_element`, then find and
+  `select_item` / `click_element` the entry.
+- Editable combo boxes where free text is wanted: use
+  `set_element_value`.
+
+Pass the combo box element itself, not an item inside it. Matching is
+exact and case-sensitive, with no partial match. If no entry matches,
+the popup is closed and the tool fails with `no such element`; call
+`expand_element` and `get_page_source` to read the real entry names,
+then retry.
+
+```json
+{ "elementId": "<combo box id>", "value": "Finance" }
+```
 
 ---
 
