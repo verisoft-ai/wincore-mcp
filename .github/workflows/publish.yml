@@ -11,6 +11,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release:
@@ -27,6 +28,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24.x
+          registry-url: https://registry.npmjs.org
 
       - run: npm install --no-package-lock
 
@@ -40,6 +42,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # semantic-release publishes to npmjs (trusted publishing); this mirrors the
+      # same version to Nexus, so package.json has no publishConfig.
       - name: Publish to Nexus
         shell: bash
         env:
@@ -69,4 +73,4 @@ jobs:
           fi
           tag=latest
           [[ "$version" == *-* ]] && tag=preview
-          npm publish --ignore-scripts --tag "$tag"
+          npm publish --ignore-scripts --registry "$registry" --tag "$tag"

@@ -61,8 +61,5 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.1",
     "vitest": "^2.1.0"
-  },
-  "publishConfig": {
-    "registry": "https://nexus.verisoft.io/repository/npm-hosted/"
   }
 }
