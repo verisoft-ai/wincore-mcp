@@ -11,7 +11,6 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
-  id-token: write
 
 jobs:
   release:
@@ -28,7 +27,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24.x
-          registry-url: https://registry.npmjs.org
 
       - run: npm install --no-package-lock
 
@@ -41,3 +39,34 @@ jobs:
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to Nexus
+        shell: bash
+        env:
+          NEXUS_NPM_AUTH: ${{ secrets.NEXUS_NPM_AUTH }}
+          NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/.npmrc
+        run: |
+          # npm expands ${NEXUS_NPM_AUTH} when it reads the file, so the CI user's
+          # credentials never land on disk.
+          cat > "$NPM_CONFIG_USERCONFIG" <<'EOF'
+          //nexus.verisoft.io/repository/npm-hosted/:_auth=${NEXUS_NPM_AUTH}
+          always-auth=true
+          EOF
+          registry=https://nexus.verisoft.io/repository/npm-hosted/
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          # When semantic-release cut a release, package.json already holds the new
+          # version. When it didn't, this is the last release: publish it only if
+          # Nexus doesn't have it yet (Nexus refuses to overwrite a version).
+          if published=$(npm view "$name@$version" version --registry "$registry" 2>"$RUNNER_TEMP/npm-view.err"); then
+            if [ -n "$published" ]; then
+              echo "$name@$version is already in Nexus"
+              exit 0
+            fi
+          elif ! grep -q E404 "$RUNNER_TEMP/npm-view.err"; then
+            cat "$RUNNER_TEMP/npm-view.err"
+            exit 1
+          fi
+          tag=latest
+          [[ "$version" == *-* ]] && tag=preview
+          npm publish --ignore-scripts --tag "$tag"
